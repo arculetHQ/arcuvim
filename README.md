@@ -1,3 +1,5 @@
+# (Under development)
+
 # arculet.nvim 🌌
 
 *A chill Neovim configuration for focused developers who want just what they need*
