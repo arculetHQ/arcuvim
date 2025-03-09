@@ -4,6 +4,6 @@ return {
   lazy = false,
   priority = 1000,
   config = function()
-    require("plugins.configs.catppuccin").setup()
+    require("arculet_nvim.plugins.configs.catppuccin").setup()
   end
 }

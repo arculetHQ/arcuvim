@@ -2,12 +2,12 @@ local M = {}
 
 function M.setup()
   -- Load Lazy first
-  require("plugins.lazy").setup()
+  require("arculet_nvim.plugins.lazy").setup()
 
   -- Initialize plugin manager
   require("lazy").setup({
     spec = {
-      	{ import = "plugins.specs" }
+      	{ import = "arculet_nvim.plugins.specs" }
     },
     defaults = {
 	lazy = true,
