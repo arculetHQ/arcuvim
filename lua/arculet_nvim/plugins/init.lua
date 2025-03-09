@@ -7,7 +7,8 @@ function M.setup()
   -- Initialize plugin manager
   require("lazy").setup({
     spec = {
-      	{ import = "arculet_nvim.plugins.specs" }
+      	{ import = "arculet_nvim.plugins.specs" },
+      	{ import = "arculet_nvim.custom.plugins" }
     },
     defaults = {
 	lazy = false,
