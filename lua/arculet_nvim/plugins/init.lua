@@ -10,7 +10,7 @@ function M.setup()
       	{ import = "arculet_nvim.plugins.specs" }
     },
     defaults = {
-	lazy = true,
+	lazy = false,
 	version = false
     },
     install = {
