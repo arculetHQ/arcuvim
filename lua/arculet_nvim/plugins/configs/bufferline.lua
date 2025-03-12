@@ -28,7 +28,7 @@ function M.setup()
             separator_style = { '│', '│' }, -- | "thick" | "thin" | { 'any', 'any' },
             enforce_regular_tabs = true,
             always_show_bufferline = true,
-            show_tab_indicators = false,
+            show_tab_indicators = true,
             indicator = {
                 -- icon = '▎', -- this should be omitted if indicator style is not 'icon'
                 style = 'none', -- Options: 'icon', 'underline', 'none'
@@ -39,20 +39,7 @@ function M.setup()
             maximum_length = 15,
             sort_by = 'insert_at_end',
         },
-        highlights = require("catppuccin.groups.integrations.bufferline").get {
-            styles = { "italic", "bold" },
-            custom = {
-                all = {
-                    fill = { bg = "#000000" },
-                },
-                mocha = {
-                    background = { fg = mocha.text },
-                },
-                latte = {
-                    background = { fg = "#000000" },
-                },
-            },
-        },
+        highlights = require("catppuccin.groups.integrations.bufferline").get()
     }
 
 end
