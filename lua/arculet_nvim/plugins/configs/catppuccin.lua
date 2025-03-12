@@ -44,7 +44,11 @@ function M.setup()
             notify = true,
             window_picker = true,
             lsp_trouble = true,
-            which_key = true
+            which_key = true,
+            octo = true,
+            notifier = true,
+            diffview = true,
+            hop = true,
         },
     })
 
