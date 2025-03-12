@@ -38,17 +38,20 @@ function M.setup()
         default_integrations = true,
         integrations = {
             harpoon = true,
-            mason = true,
-            notifier = true,
-            copilot_vim = true,
             notify = true,
             window_picker = true,
             lsp_trouble = true,
             which_key = true,
             octo = true,
-            notifier = true,
             diffview = true,
             hop = true,
+            noice = true,
+            fidget = true,
+            sandwich = true,
+            snacks = {
+                enabled = true,
+                indent_scope_color = "mauve", -- catppuccin color (eg. `lavender`) Default: text
+            }
         },
     })
 

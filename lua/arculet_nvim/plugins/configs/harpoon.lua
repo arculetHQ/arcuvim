@@ -121,8 +121,9 @@ function M.setup()
     vim.keymap.set("n", "<leader><Tab>", harpoon_toggle(1, 2), { desc = "Toggle between items 1 and 2" })
 
     -- Toggle previous & next buffers stored within Harpoon list
-    vim.keymap.set("n", "<C-P>", function() harpoon:list():prev() end, { desc = "Switch to the previous buffer on the harpoon list" })
-    vim.keymap.set("n", "<C-N>", function() harpoon:list():next() end, { desc = "Switch to the next buffer on the harpoon list" })
+    vim.keymap.set("n", "<M-i>", function() harpoon:list():prev() end, { desc = "Switch to the previous buffer on the harpoon list" })
+    vim.keymap.set("n", "<M-o>", function() harpoon:list():next() end, { desc = "Switch to the next buffer on the harpoon list" })
+
 end
 
 return M

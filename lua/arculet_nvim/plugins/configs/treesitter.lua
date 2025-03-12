@@ -6,6 +6,7 @@ function M.setup()
         ensure_installed = {
             "lua",
             "c",
+            "regex"
         },
 
         -- Install parsers synchronously (only applied to `ensure_installed`)
