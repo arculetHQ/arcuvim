@@ -2,7 +2,7 @@ local M = {}
 
 function M.keys()
     return {
-        { "n", "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
+        { mode = 'n', "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
     }
 end
 

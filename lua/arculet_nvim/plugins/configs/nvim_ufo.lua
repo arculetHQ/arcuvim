@@ -44,8 +44,8 @@ end
 
 function M.keys()    
     return {
-        { 'n', 'zR', function() require('ufo').openAllFolds() end, desc = 'Open all folds' },
-        { 'n', 'zM', function() require('ufo').closeAllFolds() end, desc = 'Close all folds' },
+        { mode = 'n', 'zR', function() require('ufo').openAllFolds() end, desc = 'Open all folds' },
+        { mode = 'n', 'zM', function() require('ufo').closeAllFolds() end, desc = 'Close all folds' },
     }
 end
 

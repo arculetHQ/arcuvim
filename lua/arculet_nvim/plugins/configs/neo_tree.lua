@@ -12,7 +12,7 @@ end
 
 function M.keys()
     return {
-        { "n", "<leader>e", "<cmd>Neotree toggle position=right<cr>", desc = "Toggle neotree" },
+        { mode = 'n', "<leader>e", "<cmd>Neotree toggle position=right<cr>", desc = "Toggle neotree" },
     }
 end
 

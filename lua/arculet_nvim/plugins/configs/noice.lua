@@ -25,8 +25,8 @@ end
 
 function M.keys()
     return {
-        { "n", "<leader>nl", "<cmd>NoiceLast<cr>", desc = "Noice last" },
-        { "n", "<leader>nf", "<cmd>NoiceHistory<cr>", desc = "Noice history" },
+        { mode = 'n', "<leader>nl", "<cmd>NoiceLast<cr>", desc = "Noice last" },
+        { mode = 'n', "<leader>nf", "<cmd>NoiceHistory<cr>", desc = "Noice history" },
     }
 end
 

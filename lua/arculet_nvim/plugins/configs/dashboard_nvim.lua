@@ -63,7 +63,7 @@ end
 
 function M.keys()
 	return {
-		{ "n", "<leader>db", "<cmd>Dashboard<CR>", desc = "Dashboard" }
+		{ mode = 'n', "<leader>db", "<cmd>Dashboard<CR>", desc = "Dashboard" }
 	}
 end
 

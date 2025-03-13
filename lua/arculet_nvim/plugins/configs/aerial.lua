@@ -13,7 +13,7 @@ end
 
 function M.keys()
     return {
-        { "n", "<leader>at", "<cmd>AerialToggle!<cr>", desc = "Aerial toggle" },
+        { mode = "n", "<leader>at", "<cmd>AerialToggle!<cr>", desc = "Aerial toggle" },
     }
 end
 
