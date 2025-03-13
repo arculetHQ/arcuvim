@@ -2,10 +2,8 @@ local M = {}
 
 function M.setup()
     require("bufferline").setup({
-        require("bufferline") = {
-            right_mouse_command = false, -- can be a string | function | false, see "Mouse actions"
-            separator_style = {"|", "|"}, -- "slant" | "slope" | "thick" | "thin" | { 'any', 'any' },
-        },
+        right_mouse_command = false, -- can be a string | function | false, see "Mouse actions"
+        separator_style = {"|", "|"}, -- "slant" | "slope" | "thick" | "thin" | { 'any', 'any' },
         highlights = require("catppuccin.groups.integrations.bufferline").get()
     })
 end
