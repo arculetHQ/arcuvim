@@ -1,9 +1,9 @@
 local M = {}
 
-local bufferline = require("bufferline")
-local mocha = require("catppuccin.palettes").get_palette "mocha"
-
 function M.setup()
+    local bufferline = require("bufferline")
+    local mocha = require("catppuccin.palettes").get_palette "mocha"
+
     bufferline.setup {
         options = {
             right_mouse_command = false, -- can be a string | function | false, see "Mouse actions"

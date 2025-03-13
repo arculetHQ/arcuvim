@@ -1,8 +1,8 @@
 local M = {}
 
-local diffview = require("diffview")
-
 function M.setup()
+    local diffview = require("diffview")
+
     diffview.setup()
 end
 
