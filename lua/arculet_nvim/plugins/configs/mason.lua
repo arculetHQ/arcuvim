@@ -2,9 +2,7 @@ local M = {}
 
 
 function M.setup()
-    local mason = require("mason")
-
-    mason:setup()
+    require("mason").setup()
 end
 
 return M

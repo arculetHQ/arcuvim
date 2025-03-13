@@ -1,9 +1,7 @@
 local M = {}
 
 function M.setup()
-    local nvim_treesitter = require("nvim-treesitter")
-    
-    nvim_treesitter:setup({
+    require("nvim-treesitter").setup({
         -- A list of parser names, or "all" (the listed parsers MUST always be installed)
         ensure_installed = {
             "lua",

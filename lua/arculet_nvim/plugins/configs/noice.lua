@@ -1,10 +1,7 @@
 local M = {}
 
 function M.setup()
-    local noice = require("noice")
-    local telescope = require("telescope")
-
-    noice:setup({
+    require("noice").setup({
         lsp = {
             -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
             override = {
@@ -23,7 +20,7 @@ function M.setup()
         },
     })
 
-    telescope:load_extension("noice")
+    require("telescope").load_extension("noice")
 end
 
 function M.keys()

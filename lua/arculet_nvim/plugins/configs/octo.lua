@@ -1,9 +1,7 @@
 local M = {}
 
 function M.setup()
-    local octo = require("octo")
-    
-    octo:setup()
+    require("octo").setup()
 end
 
 return M

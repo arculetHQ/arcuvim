@@ -1,9 +1,7 @@
 local M = {}
 
 function M.setup()
-    local nvim_surround = require("nvim-surround")
-    
-    nvim_surround:setup()
+    require("nvim-surround").setup()
 end
 
 return M

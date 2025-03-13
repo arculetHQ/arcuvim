@@ -29,9 +29,7 @@ local handler = function(virtText, lnum, endLnum, width, truncate)
 end
 
 function M.setup()
-    local ufo = require('ufo')
-    
-    ufo:setup({
+    require('ufo').setup({
         fold_virt_text_handler = handler,
         provider_selector = function(bufnr, filetype, buftype)
             return {'treesitter', 'indent'}
@@ -44,12 +42,10 @@ function M.setup()
     vim.o.foldenable = true
 end
 
-function M.keys()
-    local ufo = require('ufo')
-    
+function M.keys()    
     return {
-        { 'n', 'zR', function() ufo:openAllFolds() end, desc = 'Open all folds' },
-        { 'n', 'zM', function() ufo:closeAllFolds() end, desc = 'Close all folds' },
+        { 'n', 'zR', function() require('ufo').openAllFolds() end, desc = 'Open all folds' },
+        { 'n', 'zM', function() require('ufo').closeAllFolds() end, desc = 'Close all folds' },
     }
 end
 

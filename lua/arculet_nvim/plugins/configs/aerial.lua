@@ -1,9 +1,7 @@
 local M = {}
 
 function M.setup()
-    local aerial = require("aerial")
-
-    aerial:setup({
+    require("aerial").setup({
         -- optionally use on_attach to set keymaps when aerial has attached to a buffer
         on_attach = function(bufnr)
             -- Jump forwards/backwards with '{' and '}'
