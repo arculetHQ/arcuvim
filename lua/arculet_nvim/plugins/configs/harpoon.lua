@@ -1,5 +1,7 @@
 local M = {}
 
+local harpoon = require("harpoon")
+
 -- Keep track of toggle states
 local toggle_cache = {}
 
@@ -38,17 +40,17 @@ local function harpoon_toggle(harpoon_m, idx1, idx2)
 end
 
 function M.setup()
-    require("harpoon"):setup()
-    require("harpoon"):extend(require("harpoon.extensions").builtins.highlight_current_file())
+    harpoon:setup()
+    harpoon:extend(require("harpoon.extensions").builtins.highlight_current_file())
 end
 
 function M.keys()    
     return {
-        { "n", "<leader>aa", function() require("harpoon"):list():add() end, desc = "Add current buffer to the Harpoon list" },
-        { "n", "<C-e>", function() require("harpoon").ui:toggle_quick_menu(require("harpoon"):list()) end, desc = "Toggle Harpoon quick menu" },
-        { "n", "<leader><Tab>", harpoon_toggle(require("harpoon"), 1, 2), desc = "Toggle between items 1 and 2" },
-        { "n", "<M-i>", function() require("harpoon"):list():prev() end, desc = "Switch to the previous buffer on the Harpoon list" },
-        { "n", "<M-o>", function() require("harpoon"):list():next() end, desc = "Switch to the next buffer on the Harpoon list" },
+        { "n", "<leader>aa", function() harpoon:list():add() end, desc = "Add current buffer to the Harpoon list" },
+        { "n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, desc = "Toggle Harpoon quick menu" },
+        { "n", "<leader><Tab>", harpoon_toggle(harpoon, 1, 2), desc = "Toggle between items 1 and 2" },
+        { "n", "<M-i>", function() harpoon:list():prev() end, desc = "Switch to the previous buffer on the Harpoon list" },
+        { "n", "<M-o>", function() harpoon:list():next() end, desc = "Switch to the next buffer on the Harpoon list" },
     }
 end
 

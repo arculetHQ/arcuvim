@@ -37,7 +37,7 @@ local function arculet_footer()
 end
 
 function M.setup()
-    require('dashboard')setup({
+    require("dashboard").setup({
     	config = {
 	    header = arculet_header(),
 	    shortcut = {

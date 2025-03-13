@@ -1,6 +1,6 @@
 local M = {}
 
-local PYTHON_PATH = '$HOME/.pyenv/versions/nvim-env/bin/python3'
+local PYTHON_PATH = os.getenv("HOME") .. '/.pyenv/versions/nvim-env/bin/python3'
 
 local function safe_python_check()
   -- Check 1: Verify Python executable exists
