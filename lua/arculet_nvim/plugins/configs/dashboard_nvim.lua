@@ -38,8 +38,8 @@ end
 
 function M.setup()
 	local dashboard = require('dashboard')
-	
-    dashboard.setup({
+
+    dashboard:setup({
     	config = {
 	    header = arculet_header(),
 	    shortcut = {

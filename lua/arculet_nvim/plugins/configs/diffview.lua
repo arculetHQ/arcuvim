@@ -3,7 +3,7 @@ local M = {}
 function M.setup()
     local diffview = require("diffview")
 
-    diffview.setup()
+    diffview:setup()
 end
 
 return M

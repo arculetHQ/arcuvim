@@ -1,94 +1,19 @@
 local M = {}
 
-local harpoon = require("harpoon")
-local harpoon_extensions = require("harpoon.extensions")
-
---[=[
-    local telescope_finders = require("telescope.finders")
-    local telescope_pickers = require("telescope.pickers")
-    local telescope_config = require("telescope.config").values
-    local telescope_actions = require("telescope.actions")
-    local telescope_actions_state = require("telescope.actions.state")
-
-    -- telescope configuration
-    local function toggle_telescope(harpoon_files)
-        local current_items = harpoon_files.items
-
-        local finder = function()
-            local paths = {}
-            for _, item in ipairs(current_items) do
-                table.insert(paths, item.value)
-            end
-
-            return telescope_finders.new_table({
-                results = paths,
-            })
-        end
-
-        telescope_pickers.new({}, {
-            prompt_title = "Harpoon",
-            finder = finder(),
-            previewer = false,
-            sorter = telescope_config.generic_sorter({}),
-            layout_config = {
-                height = 0.4,
-                width = 0.5,
-                prompt_position = "top",
-                preview_cutoff = 120,
-            },
-            attach_mappings = function(prompt_bufnr, map)
-                map("i", "<C-d>", function()
-                    local state = telescope_actions_state
-                    local selected_entry = state.get_selected_entry()
-                    local current_picker = state.get_current_picker(prompt_bufnr)
-
-                    table.remove(current_items, selected_entry.index)
-                    current_picker:refresh(finder())
-                end)
-
-                map("n", "<C-j>", function()
-                    local state = telescope_actions_state
-                    local selected_entry = state.get_selected_entry()
-                    local current_picker = state.get_current_picker(prompt_bufnr)
-                    if selected_entry.index < #current_items then
-                        current_items[selected_entry.index], current_items[selected_entry.index+1] = 
-                        current_items[selected_entry.index+1], current_items[selected_entry.index]
-                        current_picker:refresh(finder())
-                    end
-                end,
-                { desc = "Moves selected harpoon item down" })
-
-                map("n", "<C-k>", function()
-                    local state = telescope_actions_state
-                    local selected_entry = state.get_selected_entry()
-                    local current_picker = state.get_current_picker(prompt_bufnr)
-                    if selected_entry.index > 1 then
-                        current_items[selected_entry.index-1], current_items[selected_entry.index] = 
-                        current_items[selected_entry.index], current_items[selected_entry.index-1]
-                        current_picker:refresh(finder())
-                    end
-                end,
-                { desc = "Moves selected harpoon item up" })
-                return true
-            end,
-        }):find()
-    end
---]=]
-
 -- Keep track of toggle states
 local toggle_cache = {}
 
 --- Toggle between two Harpoon items.
 -- @param idx1 The first index to toggle.
 -- @param idx2 The second index to toggle.
-local function harpoon_toggle(idx1, idx2)
+local function harpoon_toggle(harpoon_m, idx1, idx2)
     -- Ensure indices are valid
     local sorted_idx1 = math.min(idx1, idx2)
     local sorted_idx2 = math.max(idx1, idx2)
     local cache_key = string.format("%d-%d", sorted_idx1, sorted_idx2)
 
     return function()
-        local list = harpoon:list()
+        local list = harpoon_m:list()
 
         -- Validate indices are within list bounds
         if sorted_idx2 > #list.items then
@@ -113,15 +38,20 @@ local function harpoon_toggle(idx1, idx2)
 end
 
 function M.setup()
+    local harpoon = require("harpoon")
+    local harpoon_extensions = require("harpoon.extensions")
+
     harpoon:setup()
-    harpoon:extend(harpoon_extensions.builtins.highlight_current_file())
+    harpoon:extend(harpoon_extensions:builtins:highlight_current_file())
 end
 
 function M.keys()
+    local harpoon = require("harpoon")
+    
     return {
         { "n", "<leader>aa", function() harpoon:list():add() end, desc = "Add current buffer to the Harpoon list" },
-        { "n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, desc = "Toggle Harpoon quick menu" },
-        { "n", "<leader><Tab>", harpoon_toggle(1, 2), desc = "Toggle between items 1 and 2" },
+        { "n", "<C-e>", function() harpoon:ui:toggle_quick_menu(harpoon:list()) end, desc = "Toggle Harpoon quick menu" },
+        { "n", "<leader><Tab>", harpoon_toggle(harpoon, 1, 2), desc = "Toggle between items 1 and 2" },
         { "n", "<M-i>", function() harpoon:list():prev() end, desc = "Switch to the previous buffer on the Harpoon list" },
         { "n", "<M-o>", function() harpoon:list():next() end, desc = "Switch to the next buffer on the Harpoon list" },
     }
