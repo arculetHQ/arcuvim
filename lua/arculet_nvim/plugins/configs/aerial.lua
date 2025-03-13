@@ -1,8 +1,8 @@
 local M = {}
 
-local aerial = require("aerial")
-
 function M.setup()
+    local aerial = require("aerial")
+
     aerial.setup({
         -- optionally use on_attach to set keymaps when aerial has attached to a buffer
         on_attach = function(bufnr)
