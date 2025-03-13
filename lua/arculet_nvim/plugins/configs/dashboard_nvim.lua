@@ -28,7 +28,7 @@ local function arculet_footer()
     	}
     else
 	-- Fallback
-        return {
+    return {
 	    "",
 	    "Do not wait to strike till the iron is hot; but make it hot by striking.",
 	    "- William Butler Yeats"
@@ -59,6 +59,8 @@ function M.setup()
 	    footer = arculet_footer(),
 	}
     })
+
+    vim.keymap.set("n", "<C-d>", "<cmd>Dashboard<CR>", {desc = "Go to dashboard"})
 end
 
 return M

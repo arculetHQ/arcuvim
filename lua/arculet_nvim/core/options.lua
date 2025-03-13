@@ -1,5 +1,6 @@
 local M = {}
 
+vim.loader.enable()
 vim.o.hlsearch = false -- Set highlight on search
 vim.wo.number = true -- Make line numbers default
 vim.o.mouse = 'a' -- Enable mouse mode
