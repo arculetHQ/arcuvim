@@ -39,7 +39,7 @@ local function arculet_footer()
 end
 
 function M.setup()
-    dashboard:setup({
+    dashboard.setup({
     	config = {
 	    header = arculet_header(),
 	    shortcut = {

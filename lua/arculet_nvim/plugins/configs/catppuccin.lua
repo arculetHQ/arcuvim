@@ -3,7 +3,7 @@ local M = {}
 local catppuccin = require("catppuccin")
 
 function M.setup()
-    catppuccin:setup({
+    catppuccin.setup({
         term_colors = true, -- sets terminal colors (e.g. `g:terminal_color_0`)
         integrations = {
             harpoon = true,

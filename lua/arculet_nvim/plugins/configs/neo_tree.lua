@@ -8,7 +8,7 @@ function M.setup()
     vim.fn.sign_define("DiagnosticSignInfo", { text = " ", texthl = "DiagnosticSignInfo" })
     vim.fn.sign_define("DiagnosticSignHint", { text = "󰌵", texthl = "DiagnosticSignHint" })
 
-    neo_tree:setup()
+    neo_tree.setup()
 end
 
 function M.keys()

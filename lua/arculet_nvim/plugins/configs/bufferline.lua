@@ -4,7 +4,7 @@ local bufferline = require("bufferline")
 local mocha = require("catppuccin.palettes").get_palette "mocha"
 
 function M.setup()
-    bufferline:setup {
+    bufferline.setup {
         options = {
             right_mouse_command = false, -- can be a string | function | false, see "Mouse actions"
             separator_style = {"|", "|"}, -- "slant" | "slope" | "thick" | "thin" | { 'any', 'any' },

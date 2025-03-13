@@ -31,7 +31,7 @@ local handler = function(virtText, lnum, endLnum, width, truncate)
 end
 
 function M.setup()
-    ufo:setup({
+    ufo.setup({
         fold_virt_text_handler = handler,
         provider_selector = function(bufnr, filetype, buftype)
             return {'treesitter', 'indent'}
@@ -46,8 +46,8 @@ end
 
 function M.keys()
     return {
-        { 'n', 'zR', function() ufo:openAllFolds() end, desc = 'Open all folds' },
-        { 'n', 'zM', function() ufo:closeAllFolds() end, desc = 'Close all folds' },
+        { 'n', 'zR', function() ufo.openAllFolds() end, desc = 'Open all folds' },
+        { 'n', 'zM', function() ufo.closeAllFolds() end, desc = 'Close all folds' },
     }
 end
 
