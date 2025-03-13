@@ -4,5 +4,6 @@ return {
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
         require("arculet_nvim.plugins.configs.harpoon").setup()
-    end
+    end,
+    keys = require("arculet_nvim.plugins.configs.harpoon").keys()
 }

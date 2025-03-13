@@ -1,7 +1,9 @@
 local M = {}
 
+local aerial = require("aerial")
+
 function M.setup()
-    require("aerial").setup({
+    aerial:setup({
         -- optionally use on_attach to set keymaps when aerial has attached to a buffer
         on_attach = function(bufnr)
             -- Jump forwards/backwards with '{' and '}'
@@ -9,8 +11,12 @@ function M.setup()
             vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
         end,
     })
-    -- You probably also want to set a keymap to toggle aerial
-    vim.keymap.set("n", "<leader>at", "<cmd>AerialToggle!<CR>")
+end
+
+function M.keys()
+    return {
+        { "n", "<leader>at", "<cmd>AerialToggle!<cr>", desc = "Aerial toggle" },
+    }
 end
 
 return M

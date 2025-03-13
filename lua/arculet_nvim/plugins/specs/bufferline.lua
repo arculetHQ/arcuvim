@@ -8,4 +8,5 @@ return {
   config = function()
     require("arculet_nvim.plugins.configs.bufferline").setup()
   end,
+  keys = require("arculet_nvim.plugins.configs.bufferline").keys(),
 }

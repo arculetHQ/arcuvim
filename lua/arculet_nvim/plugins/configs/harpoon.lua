@@ -3,13 +3,13 @@ local M = {}
 local harpoon = require("harpoon")
 local harpoon_extensions = require("harpoon.extensions")
 
-local telescope_finders = require("telescope.finders")
-local telescope_pickers = require("telescope.pickers")
-local telescope_config = require("telescope.config").values
-local telescope_actions = require("telescope.actions")
-local telescope_actions_state = require("telescope.actions.state")
-
 --[=[
+    local telescope_finders = require("telescope.finders")
+    local telescope_pickers = require("telescope.pickers")
+    local telescope_config = require("telescope.config").values
+    local telescope_actions = require("telescope.actions")
+    local telescope_actions_state = require("telescope.actions.state")
+
     -- telescope configuration
     local function toggle_telescope(harpoon_files)
         local current_items = harpoon_files.items
@@ -75,18 +75,21 @@ local telescope_actions_state = require("telescope.actions.state")
     end
 --]=]
 
--- Keep track of toggle
+-- Keep track of toggle states
 local toggle_cache = {}
 
+--- Toggle between two Harpoon items.
+-- @param idx1 The first index to toggle.
+-- @param idx2 The second index to toggle.
 local function harpoon_toggle(idx1, idx2)
-    -- Validate indices when creating the function
+    -- Ensure indices are valid
     local sorted_idx1 = math.min(idx1, idx2)
     local sorted_idx2 = math.max(idx1, idx2)
     local cache_key = string.format("%d-%d", sorted_idx1, sorted_idx2)
 
     return function()
         local list = harpoon:list()
-        
+
         -- Validate indices are within list bounds
         if sorted_idx2 > #list.items then
             vim.notify(string.format(
@@ -110,20 +113,18 @@ local function harpoon_toggle(idx1, idx2)
 end
 
 function M.setup()
-    harpoon:setup({})
+    harpoon:setup()
     harpoon:extend(harpoon_extensions.builtins.highlight_current_file())
-    
-    vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end, { desc = "Add current buffer to the harpoon list" })
-    
-    -- vim.keymap.set("n", "<C-e>", function() toggle_telescope(harpoon:list()) end, { desc = "Open harpoon window" })
-    vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
-    
-    vim.keymap.set("n", "<leader><Tab>", harpoon_toggle(1, 2), { desc = "Toggle between items 1 and 2" })
+end
 
-    -- Toggle previous & next buffers stored within Harpoon list
-    vim.keymap.set("n", "<M-i>", function() harpoon:list():prev() end, { desc = "Switch to the previous buffer on the harpoon list" })
-    vim.keymap.set("n", "<M-o>", function() harpoon:list():next() end, { desc = "Switch to the next buffer on the harpoon list" })
-
+function M.keys()
+    return {
+        { "n", "<leader>aa", function() harpoon:list():add() end, desc = "Add current buffer to the Harpoon list" },
+        { "n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, desc = "Toggle Harpoon quick menu" },
+        { "n", "<leader><Tab>", harpoon_toggle(1, 2), desc = "Toggle between items 1 and 2" },
+        { "n", "<M-i>", function() harpoon:list():prev() end, desc = "Switch to the previous buffer on the Harpoon list" },
+        { "n", "<M-o>", function() harpoon:list():next() end, desc = "Switch to the next buffer on the Harpoon list" },
+    }
 end
 
 return M

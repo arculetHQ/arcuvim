@@ -4,5 +4,6 @@ return {
   dependencies = {{'nvim-tree/nvim-web-devicons'}},
   config = function()
     require("arculet_nvim.plugins.configs.dashboard_nvim").setup()
-  end
+  end,
+  keys = require("arculet_nvim.plugins.configs.dashboard_nvim").keys()
 }

@@ -1,7 +1,9 @@
 local M = {}
 
+local mason_lspconfig = require("mason-lspconfig")
+
 function M.setup()
-    require("mason-lspconfig").setup({
+    mason_lspconfig:setup({
         ensure_installed = {
             "lua_ls",
             "clangd"

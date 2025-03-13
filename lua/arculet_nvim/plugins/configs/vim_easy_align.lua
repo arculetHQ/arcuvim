@@ -1,8 +1,10 @@
 local M = {}
 
-function M.setup()
-    vim.api.nvim_set_keymap('x', 'ga', '<Plug>(EasyAlign)', { noremap = false, silent = true })
-    vim.api.nvim_set_keymap('n', 'ga', '<Plug>(EasyAlign)', { noremap = false, silent = true })
+function M.keys()
+    return {
+        { "n", "ga", "<Plug>(EasyAlign)", desc = "Easy align" },
+        { "x", "ga", "<Plug>(EasyAlign)", desc = "Easy align" },
+    }
 end
 
 return M

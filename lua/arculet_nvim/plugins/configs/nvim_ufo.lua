@@ -1,5 +1,7 @@
 local M = {}
 
+local ufo = require('ufo')
+
 local handler = function(virtText, lnum, endLnum, width, truncate)
     local newVirtText = {}
     local suffix = (' 󰁂 %d '):format(endLnum - lnum)
@@ -29,7 +31,7 @@ local handler = function(virtText, lnum, endLnum, width, truncate)
 end
 
 function M.setup()
-    require('ufo').setup({
+    ufo:setup({
         fold_virt_text_handler = handler,
         provider_selector = function(bufnr, filetype, buftype)
             return {'treesitter', 'indent'}
@@ -40,10 +42,13 @@ function M.setup()
     vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
     vim.o.foldlevelstart = 99
     vim.o.foldenable = true
+end
 
-    -- Using ufo provider need remap `zR` and `zM`. If Neovim is 0.6.1, remap yourself
-    vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
-    vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
+function M.keys()
+    return {
+        { 'n', 'zR', function() ufo:openAllFolds() end, desc = 'Open all folds' },
+        { 'n', 'zM', function() ufo:closeAllFolds() end, desc = 'Close all folds' },
+    }
 end
 
 return M

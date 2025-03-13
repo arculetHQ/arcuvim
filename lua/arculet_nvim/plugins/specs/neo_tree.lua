@@ -1,5 +1,4 @@
 return {
-  {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
     dependencies = {
@@ -17,6 +16,6 @@ return {
     },
     config = function()
         require("arculet_nvim.plugins.configs.neo_tree").setup()
-    end
-    }
+    end,
+    keys = require("arculet_nvim.plugins.configs.neo_tree").keys()
 }

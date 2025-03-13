@@ -1,5 +1,7 @@
 local M = {}
 
+local dashboard = require('dashboard')
+
 local function arculet_header()
     return {
     	"",
@@ -37,7 +39,7 @@ local function arculet_footer()
 end
 
 function M.setup()
-    require('dashboard').setup({
+    dashboard:setup({
     	config = {
 	    header = arculet_header(),
 	    shortcut = {
@@ -59,8 +61,12 @@ function M.setup()
 	    footer = arculet_footer(),
 	}
     })
+end
 
-    vim.keymap.set("n", "<C-d>", "<cmd>Dashboard<CR>", {desc = "Go to dashboard"})
+function M.keys()
+	return {
+		{ "n", "<leader>db", "<cmd>Dashboard<CR>", desc = "Dashboard" }
+	}
 end
 
 return M

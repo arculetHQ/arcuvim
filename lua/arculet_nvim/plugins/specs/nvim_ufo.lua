@@ -5,5 +5,6 @@ return {
     },
     config = function()
         require("arculet_nvim.plugins.configs.nvim_ufo").setup()
-    end
+    end,
+    keys = require("arculet_nvim.plugins.configs.nvim_ufo").keys()
 }

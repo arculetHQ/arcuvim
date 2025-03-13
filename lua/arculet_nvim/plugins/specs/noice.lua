@@ -14,6 +14,7 @@ return {
     },
     config = function()
         require("arculet_nvim.plugins.configs.noice").setup()
-    end
+    end,
+    keys = require("arculet_nvim.plugins.configs.noice").keys()
 }
 

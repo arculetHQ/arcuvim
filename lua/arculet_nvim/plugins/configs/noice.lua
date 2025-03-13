@@ -1,7 +1,10 @@
 local M = {}
 
+local noice = require("noice")
+local telescope = require("telescope")
+
 function M.setup()
-    require("noice").setup({
+    noice:setup({
         lsp = {
             -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
             override = {
@@ -20,15 +23,14 @@ function M.setup()
         },
     })
 
-    require("telescope").load_extension("noice")
+    telescope:load_extension("noice")
+end
 
-    vim.keymap.set("n", "<leader>nl", function()
-        require("noice").cmd("last")
-    end)
-
-    vim.keymap.set("n", "<leader>nh", function()
-        require("noice").cmd("history")
-    end)
+function M.keys()
+    return {
+        { "n", "<leader>nl", "<cmd>NoiceLast<cr>", desc = "Noice last" },
+        { "n", "<leader>nf", "<cmd>NoiceHistory<cr>", desc = "Noice history" },
+    }
 end
 
 return M
