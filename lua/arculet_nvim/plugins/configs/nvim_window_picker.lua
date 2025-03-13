@@ -1,9 +1,9 @@
 local M = {}
 
-local window_picker = require("window-picker")
-
 function M.setup()
-    window_picker.setup({
+    local window_picker = require("window-picker")
+    
+    window_picker:setup({
         filter_rules = {
             include_current_win = false,
             autoselect_one = true,

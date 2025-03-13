@@ -1,12 +1,12 @@
 local M = {}
 
-local scope = require("scope")
-local telescope = require("telescope")
-
 function M.setup()
-    scope.setup()
+    local scope = require("scope")
+    local telescope = require("telescope")
+    
+    scope:setup()
 
-    telescope.load_extension("scope")
+    telescope:load_extension("scope")
 end
 
 return M

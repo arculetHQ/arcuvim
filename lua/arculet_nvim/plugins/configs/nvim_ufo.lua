@@ -1,7 +1,5 @@
 local M = {}
 
-local ufo = require('ufo')
-
 local handler = function(virtText, lnum, endLnum, width, truncate)
     local newVirtText = {}
     local suffix = (' 󰁂 %d '):format(endLnum - lnum)
@@ -31,7 +29,9 @@ local handler = function(virtText, lnum, endLnum, width, truncate)
 end
 
 function M.setup()
-    ufo.setup({
+    local ufo = require('ufo')
+    
+    ufo:setup({
         fold_virt_text_handler = handler,
         provider_selector = function(bufnr, filetype, buftype)
             return {'treesitter', 'indent'}
@@ -45,9 +45,11 @@ function M.setup()
 end
 
 function M.keys()
+    local ufo = require('ufo')
+    
     return {
-        { 'n', 'zR', function() ufo.openAllFolds() end, desc = 'Open all folds' },
-        { 'n', 'zM', function() ufo.closeAllFolds() end, desc = 'Close all folds' },
+        { 'n', 'zR', function() ufo:openAllFolds() end, desc = 'Open all folds' },
+        { 'n', 'zM', function() ufo:closeAllFolds() end, desc = 'Close all folds' },
     }
 end
 

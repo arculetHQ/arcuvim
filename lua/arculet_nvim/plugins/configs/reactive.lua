@@ -1,9 +1,9 @@
 local M = {}
 
-local reactive = require("reactive")
-
 function M.setup()
-    reactive.setup({
+    local reactive = require("reactive")
+    
+    reactive:setup({
         builtin = {
             cursorline = true,
             cursor = true,

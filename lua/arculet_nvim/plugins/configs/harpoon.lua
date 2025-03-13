@@ -42,7 +42,7 @@ function M.setup()
     local harpoon_extensions = require("harpoon.extensions")
 
     harpoon:setup()
-    harpoon:extend(harpoon_extensions:builtins:highlight_current_file())
+    harpoon:extend(harpoon_extensions:builtins.highlight_current_file())
 end
 
 function M.keys()
