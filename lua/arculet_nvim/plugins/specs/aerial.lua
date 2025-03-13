@@ -8,6 +8,6 @@ return {
     },
     config = function()
         require("arculet_nvim.plugins.configs.aerial").setup()
-    end
+    end,
     keys = require("arculet_nvim.plugins.configs.aerial").keys()
 }
