@@ -1,7 +1,7 @@
 local M = {}
 
 function M.setup()
-    require("telescope").setup()
+    require("telescope").setup({})
 end
 
 function M.keys()    
