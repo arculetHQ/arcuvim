@@ -46,27 +46,27 @@ end
 
 function M.keys()    
     return {
-        { "n", "<leader>aa", function()
+        { mode = "n", "<leader>aa", function()
             local harpoon = require("harpoon")
 
             harpoon:list():add()
         end, desc = "Add current buffer to the Harpoon list" },
-        { "n", "<C-e>", function()
+        { mode = "n", "<C-e>", function()
             local harpoon = require("harpoon")
             
             harpoon.ui:toggle_quick_menu(harpoon:list())
         end, desc = "Toggle Harpoon quick menu" },
-        { "n", "<leader><Tab>", function()
+        { mode = "n", "<leader><Tab>", function()
             local harpoon = require("harpoon")
 
             harpoon_toggle(harpoon, 1, 2)
         end, desc = "Toggle between items 1 and 2" },
-        { "n", "<M-i>", function()
+        { mode = "n", "<M-i>", function()
             local harpoon = require("harpoon")
 
             harpoon:list():prev()
         end, desc = "Switch to the previous buffer on the Harpoon list" },
-        { "n", "<M-o>", function()
+        { mode = "n", "<M-o>", function()
             local harpoon = require("harpoon")
 
             harpoon:list():next()
