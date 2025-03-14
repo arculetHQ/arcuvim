@@ -924,3 +924,6 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/lua,vim,linux,macos,android,git,archlinuxpackages,visualstudio,visualstudiocode,jetbrains+all,jetbrains+iml,jetbrains,emacs,xcode,xcodeinjection,sublimetext
+
+# Custom
+lua/arcuvim/custom/**/**
