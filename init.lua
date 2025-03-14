@@ -1,5 +1,5 @@
 local M = {}
 
-require("arculet_nvim")
+require("arcuvim")
 
 return M
