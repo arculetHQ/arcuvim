@@ -7,8 +7,7 @@ function M.setup()
   -- Initialize plugin manager
   require("lazy").setup({
     spec = {
-      	{ import = "arcuvim.plugins.specs" },
-      	{ import = "arcuvim.custom.plugins" }
+      	{ import = "arcuvim.plugins.specs" }
     },
     defaults = {
 	lazy = true,
