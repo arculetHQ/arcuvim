@@ -3,26 +3,24 @@ local M = {}
 function M.setup()
 	local lsp_list = require("arcuvim.plugins.language_support").lsp_list()
 	local none_ls_source_list = require("arcuvim.plugins.language_support").none_ls_source_list()
-	local capabilities = require("cmp_nvim_lsp").default_capabilities()
+	local dynamic_capabilities = vim.lsp.protocol.make_client_capabilities()
+	local capabilities = require("cmp_nvim_lsp").default_capabilities(dynamic_capabilities)
 	local lspconfig = require("lspconfig")
 	local lspkind = require("lspkind")
 	local null_ls = require("null-ls")
 	local cmp = require("cmp")
-	local dynamic_capabilities = vim.lsp.protocol.make_client_capabilities()
 	local sources = {}
-	dynamic_capabilities.textDocument.completion.completionItem.snippetSupport = true
-	dynamic_capabilities.textDocument.completion.completionItem.resolveSupport = {
+	capabilities.textDocument.completion.completionItem.snippetSupport = true
+	capabilities.textDocument.completion.completionItem.resolveSupport = {
 		properties = { "documentation", "detail", "additionalTextEdits" },
 	}
-	capabilities = vim.tbl_deep_extend("force", capabilities, dynamic_capabilities)
 	capabilities.textDocument.semanticHighlighting = {
 		ranges = true,
 		tokenModifiers = { "declaration", "documentation", "readonly", "static" },
 		tokenTypes = 256, -- Access all semantic token types
 	}
-	capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = true
-
 	capabilities.textDocument.foldingRange = { dynamicRegistration = false, lineFoldingOnly = true }
+
 	local prompts = {
 		-- Code related prompts
 		Explain = "Please explain how the following code works.",
@@ -55,31 +53,9 @@ function M.setup()
 		nmap("gI", require("telescope.builtin").lsp_implementations, "Goto Implementation")
 		nmap("gy", require("telescope.builtin").lsp_type_definitions, "Goto Type Definition")
 		nmap("K", "<cmd>Lspsaga hover_doc<cr>", "Hover Documentation")
-		nmap("<leader>cd", "<cmd>TroubleToggle document_diagnostics<cr>", "Document Diagnostics")
-		nmap("<leader>cs", "<cmd>TroubleToggle workspace_diagnostics<cr>", "Workspace Diagnostics")
 		nmap("<leader>cf", function()
 			vim.lsp.buf.format({ async = true, timeout = 5000 })
 		end, "Format")
-		nmap("<leader>cl", "<cmd>LspLineDiagnostics<cr>", "Line Diagnostics")
-
-		-- Inlay hints
-		require("inlay-hints").on_attach(client, bufnr)
-
-		-- Signature help
-		require("lsp_signature").on_attach({
-			bind = true,
-			handler_opts = { border = "rounded" },
-			hint_prefix = "󰌶 ",
-		}, bufnr)
-
-		-- CodeLens support
-		if client.supports_method("textDocument/codeLens") then
-			vim.lsp.codelens.refresh()
-			vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
-				buffer = bufnr,
-				callback = vim.lsp.codelens.refresh,
-			})
-		end
 	end
 
 	for _, lsp in ipairs(lsp_list) do
@@ -140,11 +116,11 @@ function M.setup()
 			documentation = cmp.config.window.bordered(),
 		},
 		mapping = cmp.mapping.preset.insert({
-			["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
-			["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+			["<C-b>"] = cmp.mapping.scroll_docs(-4),
+			["<C-f>"] = cmp.mapping.scroll_docs(4),
 			["<C-Space>"] = cmp.mapping.complete(),
 			["<C-e>"] = cmp.mapping.abort(),
-			["<CR>"] = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
+			["<CR>"] = cmp.mapping.confirm({ select = false }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
 		}),
 		formatting = {
 			format = lspkind.cmp_format({
@@ -174,6 +150,8 @@ function M.setup()
 			{ name = "luasnip" },
 			{ name = "calc" },
 			{ name = "copilot" },
+			{ name = "path" },
+			{ name = "buffer" },
 			{
 				name = "lazydev",
 			},
@@ -191,7 +169,6 @@ function M.setup()
 	})
 
 	require("cmp_git").setup({})
-
 	require("copilot").setup({
 		suggestion = { enabled = false },
 		panel = { enabled = false },
@@ -343,11 +320,7 @@ function M.setup()
 
 	vim.api.nvim_set_hl(0, "@lsp.type.class", { link = "Structure" })
 	vim.api.nvim_set_hl(0, "@lsp.type.decorator", { link = "Function" })
-
-	vim.keymap.set("n", "gD", "<CMD>Glance definitions<CR>")
-	vim.keymap.set("n", "gR", "<CMD>Glance references<CR>")
-	vim.keymap.set("n", "gY", "<CMD>Glance type_definitions<CR>")
-	vim.keymap.set("n", "gM", "<CMD>Glance implementations<CR>")
+	vim.api.nvim_set_hl(0, "CmpItemKindCopilot", { fg = "#6CC644" })
 end
 
 function M.copilot_chat__keys()

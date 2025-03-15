@@ -15,10 +15,6 @@ return {
 				"nvimtools/none-ls.nvim",
 			},
 			{
-				"jay-babu/mason-null-ls.nvim",
-				opts = {},
-			},
-			{
 				"hrsh7th/nvim-cmp",
 				dependencies = {
 					{
@@ -81,21 +77,6 @@ return {
 					},
 				},
 			},
-
-			{
-				"smjonas/inc-rename.nvim",
-				keys = {
-					{
-						mode = "n",
-						"<leader>rn",
-						function()
-							return ":IncRename " .. vim.fn.expand("<cword>")
-						end,
-						expr = true,
-						desc = "LSP based incremental Rename",
-					},
-				},
-			},
 			{
 				"folke/lazydev.nvim",
 				ft = "lua", -- only load on lua files
@@ -120,19 +101,10 @@ return {
 			{
 				"onsails/lspkind.nvim",
 			},
-			{
-				"simrat39/inlay-hints.nvim",
-				opts = {},
-			},
-			{ "ray-x/lsp_signature.nvim" },
-			{
-				"VidocqH/lsp-lens.nvim",
-                opts = {}
-			},
             {
-                'dnlhc/glance.nvim',
-                cmd = 'Glance'
-            },
+                "VidocqH/lsp-lens.nvim",
+                opts = {}
+            }
 		},
 		config = function()
 			require("arcuvim.plugins.configs.arcuvim_als").setup()
