@@ -14,9 +14,6 @@ function M.setup()
             },
         },
     })
-
-    require("neo-tree").setup({})
-
 end
 
 function M.keys()

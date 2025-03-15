@@ -1,5 +1,13 @@
 local M = {}
 
+function M.setup()
+    require("trouble").setup({
+        mode = "document_diagnostics",
+        auto_preview = false,
+        use_diagnostic_signs = true,
+      })
+end
+
 function M.keys()
     return {
         {

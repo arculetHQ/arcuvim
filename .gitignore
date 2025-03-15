@@ -927,3 +927,4 @@ FodyWeavers.xsd
 
 # Custom
 lua/arcuvim/custom/**/**
+!lua/arcuvim/custom/.gitkeep

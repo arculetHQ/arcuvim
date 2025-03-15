@@ -1,4 +1,4 @@
 return {
     "nvim-telescope/telescope-ui-select.nvim",
-    after = "telescope"
+    after = "telescope.nvim"
 }
