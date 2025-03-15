@@ -3,42 +3,25 @@ return {
 		"neovim/nvim-lspconfig",
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
+			"williamboman/mason-lspconfig.nvim",
+			"nvimtools/none-ls.nvim",
+			"onsails/lspkind.nvim",
+			"https://git.sr.ht/~whynothugo/lsp_lines.nvim",
 			{
 				"williamboman/mason.nvim",
 				event = "VeryLazy",
 				opts = {},
 			},
 			{
-				"williamboman/mason-lspconfig.nvim",
-			},
-			{
-				"nvimtools/none-ls.nvim",
-			},
-			{
 				"hrsh7th/nvim-cmp",
 				dependencies = {
-					{
-						"hrsh7th/cmp-nvim-lsp",
-					},
-					{
-						"hrsh7th/cmp-nvim-lua",
-					},
-					{
-						"hrsh7th/cmp-buffer",
-					},
-					{
-						"hrsh7th/cmp-path",
-					},
-					{
-						"hrsh7th/cmp-cmdline",
-					},
-
-					{
-						"petertriho/cmp-git",
-					},
-					{
-						"hrsh7th/cmp-calc",
-					},
+					"hrsh7th/cmp-nvim-lsp",
+					"hrsh7th/cmp-nvim-lua",
+					"hrsh7th/cmp-buffer",
+					"hrsh7th/cmp-path",
+					"hrsh7th/cmp-cmdline",
+					"petertriho/cmp-git",
+					"hrsh7th/cmp-calc",
 					{
 						"zbirenbaum/copilot.lua",
 						cmd = "Copilot",
@@ -48,16 +31,13 @@ return {
 					{
 						"CopilotC-Nvim/CopilotChat.nvim",
 						dependencies = {
-							{ "zbirenbaum/copilot.lua" }, -- or zbirenbaum/copilot.lua
-							{ "nvim-telescope/telescope.nvim" },
+							"zbirenbaum/copilot.lua", -- or zbirenbaum/copilot.lua
+							"nvim-telescope/telescope.nvim",
 							{ "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
 						},
 						build = "make tiktoken", -- Only on MacOS or Linux
-						opts = {
-							-- See Configuration section for options
-						},
+						opts = {},
 						keys = require("arcuvim.plugins.configs.arcuvim_als").copilot_chat__keys(),
-						-- See Commands section for default commands if you want to lazy load on them
 					},
 					{
 						"zbirenbaum/copilot-cmp",
@@ -66,15 +46,12 @@ return {
 					},
 				},
 			},
-
 			{
 				"L3MON4D3/LuaSnip",
 				build = "make install_jsregexp",
 				dependencies = {
-					{ "rafamadriz/friendly-snippets" },
-					{
-						"saadparwaiz1/cmp_luasnip",
-					},
+					"rafamadriz/friendly-snippets",
+					"saadparwaiz1/cmp_luasnip",
 				},
 			},
 			{
@@ -89,9 +66,6 @@ return {
 				},
 			},
 			{
-				"https://git.sr.ht/~whynothugo/lsp_lines.nvim",
-			},
-			{
 				"nvimdev/lspsaga.nvim",
 				dependencies = {
 					"nvim-treesitter/nvim-treesitter", -- optional
@@ -99,12 +73,9 @@ return {
 				},
 			},
 			{
-				"onsails/lspkind.nvim",
+				"VidocqH/lsp-lens.nvim",
+				opts = {},
 			},
-            {
-                "VidocqH/lsp-lens.nvim",
-                opts = {}
-            }
 		},
 		config = function()
 			require("arcuvim.plugins.configs.arcuvim_als").setup()

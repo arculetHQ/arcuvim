@@ -14,11 +14,6 @@ function M.setup()
 	capabilities.textDocument.completion.completionItem.resolveSupport = {
 		properties = { "documentation", "detail", "additionalTextEdits" },
 	}
-	capabilities.textDocument.semanticHighlighting = {
-		ranges = true,
-		tokenModifiers = { "declaration", "documentation", "readonly", "static" },
-		tokenTypes = 256, -- Access all semantic token types
-	}
 	capabilities.textDocument.foldingRange = { dynamicRegistration = false, lineFoldingOnly = true }
 
 	local prompts = {
@@ -58,16 +53,17 @@ function M.setup()
 		end, "Format")
 	end
 
-	for _, lsp in ipairs(lsp_list) do
-		lspconfig[lsp].setup({
-			on_attach = on_attach,
-			capabilities = capabilities,
-		})
-	end
-
 	require("mason-lspconfig").setup({
 		ensure_installed = lsp_list,
 		automatic_installation = true,
+		handlers = {
+			function(server)
+				lspconfig[server].setup({
+					on_attach = on_attach,
+					capabilities = capabilities,
+				})
+			end,
+		},
 	})
 
 	for _, item in ipairs(none_ls_source_list) do
@@ -108,7 +104,6 @@ function M.setup()
 				require("luasnip").lsp_expand(args.body) -- For `luasnip` users.
 			end,
 		},
-		preselect = cmp.PreselectMode.Item,
 		window = {
 			completion = cmp.config.window.bordered({
 				winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual",
@@ -152,11 +147,7 @@ function M.setup()
 			{ name = "copilot" },
 			{ name = "path" },
 			{ name = "buffer" },
-			{
-				name = "lazydev",
-			},
-		}, {
-			{ name = "buffer" },
+			{ name = "lazydev" },
 		}),
 	})
 
@@ -214,25 +205,6 @@ function M.setup()
 		},
 	})
 
-	local has_words_before = function()
-		if vim.api.nvim_get_option_value(0, "buftype") == "prompt" then
-			return false
-		end
-		local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-		return col ~= 0 and vim.api.nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]:match("^%s*$") == nil
-	end
-	cmp.setup({
-		mapping = {
-			["<Tab>"] = vim.schedule_wrap(function(fallback)
-				if cmp.visible() and has_words_before() then
-					cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-				else
-					fallback()
-				end
-			end),
-		},
-	})
-
 	require("CopilotChat").setup({
 		question_header = "## User ",
 		answer_header = "## Copilot ",
@@ -277,7 +249,7 @@ function M.setup()
 
 	vim.api.nvim_create_user_command("CopilotChatInline", function(args)
 		require("CopilotChat").ask(args.args, {
-			selection = require("CopilotChat,select").visual,
+			selection = require("CopilotChat.select").visual,
 			window = {
 				layout = "float",
 				relative = "cursor",
@@ -308,19 +280,17 @@ function M.setup()
 		end,
 	})
 
-	vim.lsp.handlers["workspace/didChangeWorkspaceFolders"] = function(_, _, ctx)
-		require("lspconfig.util").refresh_config(ctx.client_id)
-		vim.schedule(function()
-			vim.lsp.buf.execute_command({
-				command = "workspace/reload",
-				arguments = { vim.fn.getcwd() },
-			})
-		end)
-	end
-
 	vim.api.nvim_set_hl(0, "@lsp.type.class", { link = "Structure" })
 	vim.api.nvim_set_hl(0, "@lsp.type.decorator", { link = "Function" })
 	vim.api.nvim_set_hl(0, "CmpItemKindCopilot", { fg = "#6CC644" })
+
+	cmp.event:on("menu_opened", function()
+		vim.b.copilot_suggestion_hidden = true
+	end)
+
+	cmp.event:on("menu_closed", function()
+		vim.b.copilot_suggestion_hidden = false
+	end)
 end
 
 function M.copilot_chat__keys()
