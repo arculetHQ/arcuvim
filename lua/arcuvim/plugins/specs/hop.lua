@@ -3,5 +3,6 @@ return {
     version = '*',
     opts = {
         keys = "etovxqpdygfblzhckisuran"
-    }
+    },
+    keys = require("arcuvim.plugins.configs.hop").keys()
 }

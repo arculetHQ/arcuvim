@@ -1,6 +1,6 @@
 return {
     "tiagovla/scope.nvim",
-    after = { "telescope", "bufferline" },
+    after = { "telescope.nvim", "bufferline" },
     event = "VeryLazy",
     opst = {}
 }
