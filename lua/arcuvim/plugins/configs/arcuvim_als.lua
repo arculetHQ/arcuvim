@@ -1,15 +1,13 @@
 local M = {}
 
-function M.setup()
-	local lsp_list = require("arcuvim.plugins.language_support").lsp_list()
-	local none_ls_source_list = require("arcuvim.plugins.language_support").none_ls_source_list()
+function M.lsp_setup()
 	local dynamic_capabilities = vim.lsp.protocol.make_client_capabilities()
 	local capabilities = require("cmp_nvim_lsp").default_capabilities(dynamic_capabilities)
 	local lspconfig = require("lspconfig")
+	local mason_tool_installer = require("mason-tool-installer")
 	local lspkind = require("lspkind")
 	local null_ls = require("null-ls")
 	local cmp = require("cmp")
-	local sources = {}
 	capabilities.textDocument.completion.completionItem.snippetSupport = true
 	capabilities.textDocument.completion.completionItem.resolveSupport = {
 		properties = { "documentation", "detail", "additionalTextEdits" },
@@ -48,53 +46,92 @@ function M.setup()
 		nmap("gI", require("telescope.builtin").lsp_implementations, "Goto Implementation")
 		nmap("gy", require("telescope.builtin").lsp_type_definitions, "Goto Type Definition")
 		nmap("K", "<cmd>Lspsaga hover_doc<cr>", "Hover Documentation")
-		nmap("<leader>cf", function()
-			vim.lsp.buf.format({ async = true, timeout = 5000 })
-		end, "Format")
 	end
 
+	local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+	local mason_lsp_list = require("arcuvim.plugins.language_support").mason_lsp_list()
+	local mason_null_ls_list = require("arcuvim.plugins.language_support").mason_null_ls_list()
+	local none_null_ls_list = require("arcuvim.plugins.language_support").none_null_ls_list()
+
+	local merged_mason_list = {}
+
+	for _, v in ipairs(mason_lsp_list) do
+		table.insert(merged_mason_list, v)
+	end
+	for _, v in ipairs(mason_null_ls_list) do
+		table.insert(merged_mason_list, v)
+	end
+
+	local lsp_formatting = function(bufnr)
+		vim.lsp.buf.format({
+			filter = function(client)
+				-- apply whatever logic you want (in this example, we'll only use null-ls)
+				return client.name == "null-ls"
+			end,
+			bufnr = bufnr,
+		})
+	end
+
+	local function is_null_ls_formatting_enabled(bufnr)
+		local file_type = vim.api.nvim_buf_get_option(bufnr, "filetype")
+		local generators =
+			require("null-ls.generators").get_available(file_type, require("null-ls.methods").internal.FORMATTING)
+		return #generators > 0
+	end
+
+	mason_tool_installer.setup({
+		ensure_installed = merged_mason_list,
+	})
+
+	require("mason-null-ls").setup({
+		ensure_installed = mason_null_ls_list,
+		automatic_installation = true,
+		handlers = {},
+	})
+
 	require("mason-lspconfig").setup({
-		ensure_installed = lsp_list,
+		ensure_installed = mason_lsp_list,
 		automatic_installation = true,
 		handlers = {
 			function(server)
 				lspconfig[server].setup({
 					on_attach = on_attach,
 					capabilities = capabilities,
+					autostart = true,
 				})
 			end,
 		},
 	})
 
-	for _, item in ipairs(none_ls_source_list) do
-		if item.type == "builtin" then
-			-- Handle built-in sources from null-ls.builtins
-			local builtin = require("null-ls.builtins")
-			local module = builtin
+	null_ls.setup({
+		sources = none_null_ls_list,
+		debug = true,
+		on_attach = function(client, bufnr)
+			if client.supports_method("textDocument/formatting") then
+				vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+				vim.api.nvim_create_autocmd("BufWritePre", {
+					group = augroup,
+					buffer = bufnr,
+					callback = function()
+						lsp_formatting(bufnr)
+					end,
+				})
+			end
 
-			for segment in item.name:gmatch("([^%.]+)") do
-				module = module[segment]
-				if not module then
-					break
+			if client.server_capabilities.documentFormattingProvider then
+				if client.name == "null-ls" and is_null_ls_formatting_enabled(bufnr) or client.name ~= "null-ls" then
+					vim.bo[bufnr].formatexpr = "v:lua.vim.lsp.formatexpr()"
+					vim.keymap.set(
+						"n",
+						"<leader>gq",
+						"<cmd>lua vim.lsp.buf.format({ async = true, timeout = 5000 })<CR>"
+					)
+				else
+					vim.bo[bufnr].formatexpr = nil
 				end
 			end
-
-			if module then
-				table.insert(sources, module)
-			end
-		elseif item.type == "external" then
-			-- Handle external sources (like none-ls-extras.nvim)
-			local success, external_module = pcall(require, item.name)
-			if success then
-				table.insert(sources, external_module)
-			else
-				print("Warning: Could not load " .. item.name)
-			end
-		end
-	end
-
-	null_ls.setup({
-		sources = sources,
+		end,
+		autostart = true,
 	})
 
 	cmp.setup({
@@ -104,6 +141,9 @@ function M.setup()
 				require("luasnip").lsp_expand(args.body) -- For `luasnip` users.
 			end,
 		},
+		enabled = function()
+			return vim.api.nvim_buf_get_option(0, "buftype") ~= "prompt" or require("cmp_dap").is_dap_buffer()
+		end,
 		window = {
 			completion = cmp.config.window.bordered({
 				winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual",
@@ -148,6 +188,7 @@ function M.setup()
 			{ name = "path" },
 			{ name = "buffer" },
 			{ name = "lazydev" },
+			{ name = "emoji" },
 		}),
 	})
 
@@ -157,6 +198,12 @@ function M.setup()
 		}, {
 			{ name = "buffer" },
 		}),
+	})
+
+	require("cmp").setup.filetype({ "dap-repl", "dapui_watches", "dapui_hover" }, {
+		sources = {
+			{ name = "dap" },
+		},
 	})
 
 	require("cmp_git").setup({})
@@ -372,6 +419,68 @@ function M.copilot_chat__keys()
 		-- Copilot Chat Agents
 		{ "<leader>caa", "<cmd>CopilotChatAgents<cr>", desc = "CopilotChat - Select Agents" },
 	}
+end
+
+function M.dap_setup()
+	local dap = require("dap")
+	local dapui = require("dapui")
+	dapui.setup()
+	require("nvim-dap-virtual-text").setup({})
+	require("arcuvim.plugins.language_support").debuggers()
+
+	dap.listeners.before.attach.dapui_config = function()
+		dapui.open()
+	end
+	dap.listeners.before.launch.dapui_config = function()
+		dapui.open()
+	end
+	dap.listeners.before.event_terminated.dapui_config = function()
+		dapui.close()
+	end
+	dap.listeners.before.event_exited.dapui_config = function()
+		dapui.close()
+	end
+
+	require("persistent-breakpoints").setup({
+		load_breakpoints_event = { "BufReadPost" },
+	})
+
+	require("swenv").setup({
+		post_set_venv = function()
+			local client = vim.lsp.get_clients({ name = "basedpyright" })[1]
+			if not client then
+				return
+			end
+			local venv = require("swenv.api").get_current_venv()
+			if not venv then
+				return
+			end
+			local venv_python = venv.path .. "/bin/python"
+			if client.settings then
+				client.settings =
+					vim.tbl_deep_extend("force", client.settings, { python = { pythonPath = venv_python } })
+			else
+				client.config.settings =
+					vim.tbl_deep_extend("force", client.config.settings, { python = { pythonPath = venv_python } })
+			end
+			client.notify("workspace/didChangeConfiguration", { settings = nil })
+		end,
+	})
+
+	vim.api.nvim_create_autocmd("FileType", {
+		pattern = { "python" },
+		callback = function()
+			require("swenv.api").auto_venv()
+		end,
+	})
+
+	local opts = { noremap = true, silent = true }
+	local keymap = vim.api.nvim_set_keymap
+	-- Save breakpoints to file automatically.
+	keymap("n", "<leader>bpt", "<cmd>lua require('persistent-breakpoints.api').toggle_breakpoint()<cr>", opts)
+	keymap("n", "<leader>bpc", "<cmd>lua require('persistent-breakpoints.api').set_conditional_breakpoint()<cr>", opts)
+	keymap("n", "<leader>bpac", "<cmd>lua require('persistent-breakpoints.api').clear_all_breakpoints()<cr>", opts)
+	keymap("n", "<leader>bpp", "<cmd>lua require('persistent-breakpoints.api').set_log_point()<cr>", opts)
 end
 
 return M

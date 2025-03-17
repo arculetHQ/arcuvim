@@ -29,7 +29,19 @@ function M.setup()
 				},
 			},
 			lualine_c = {},
-			lualine_x = { "copilot", "encoding", "fileformat", "filetype", "lsp_status" },
+			lualine_x = {
+				"copilot",
+				"encoding",
+				"fileformat",
+				{
+					"swenv",
+					cond = function()
+						return vim.bo.filetype == "python"
+					end,
+				},
+				"filetype",
+				"lsp_status",
+			},
 		},
 		extensions = { "neo-tree" },
 	})

@@ -4,9 +4,13 @@ return {
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			"williamboman/mason-lspconfig.nvim",
+			"WhoIsSethDaniel/mason-tool-installer.nvim",
 			"nvimtools/none-ls.nvim",
+			"nvimtools/none-ls-extras.nvim",
+			"jay-babu/mason-null-ls.nvim",
 			"onsails/lspkind.nvim",
 			"https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+			"AckslD/swenv.nvim",
 			{
 				"williamboman/mason.nvim",
 				event = "VeryLazy",
@@ -22,6 +26,8 @@ return {
 					"hrsh7th/cmp-cmdline",
 					"petertriho/cmp-git",
 					"hrsh7th/cmp-calc",
+					"hrsh7th/cmp-emoji",
+					"rcarriga/cmp-dap",
 					{
 						"zbirenbaum/copilot.lua",
 						cmd = "Copilot",
@@ -78,7 +84,27 @@ return {
 			},
 		},
 		config = function()
-			require("arcuvim.plugins.configs.arcuvim_als").setup()
+			require("arcuvim.plugins.configs.arcuvim_als").lsp_setup()
+		end,
+	},
+	{
+		"mfussenegger/nvim-dap",
+		dependencies = {
+			"rcarriga/nvim-dap-ui",
+			"theHamsta/nvim-dap-virtual-text",
+			"andrewferrier/debugprint.nvim",
+			"nvim-neotest/nvim-nio",
+			"nvim-telescope/telescope-dap.nvim",
+			"Weissle/persistent-breakpoints.nvim",
+			"echasnovski/mini.nvim",
+			"mxsdev/nvim-dap-vscode-js",
+			{
+				"microsoft/vscode-js-debug",
+				build = "npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out",
+			},
+		},
+		config = function()
+			require("arcuvim.plugins.configs.arcuvim_als").dap_setup()
 		end,
 	},
 }
