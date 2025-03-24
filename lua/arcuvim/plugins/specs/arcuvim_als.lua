@@ -35,17 +35,6 @@ return {
 						opts = {},
 					},
 					{
-						"CopilotC-Nvim/CopilotChat.nvim",
-						dependencies = {
-							"zbirenbaum/copilot.lua", -- or zbirenbaum/copilot.lua
-							"nvim-telescope/telescope.nvim",
-							{ "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
-						},
-						build = "make tiktoken", -- Only on MacOS or Linux
-						opts = {},
-						keys = require("arcuvim.plugins.configs.arcuvim_als").copilot_chat__keys(),
-					},
-					{
 						"zbirenbaum/copilot-cmp",
 						after = "copilot.lua",
 						opts = {},
