@@ -1,96 +1,66 @@
 local M = {}
 
+local function nmap(bufnr, keys, func, desc)
+	vim.keymap.set("n", keys, func, { buffer = bufnr, desc = "LSP: " .. desc })
+end
+
+local function on_attach(client, bufnr)
+	local telescope = require("telescope.builtin")
+	nmap(bufnr, "<leader>cr", vim.lsp.buf.rename, "Rename")
+	nmap(bufnr, "<leader>ca", vim.lsp.buf.code_action, "Code Action")
+	nmap(bufnr, "gd", telescope.lsp_definitions, "Goto Definition")
+	nmap(bufnr, "gr", telescope.lsp_references, "Goto References")
+	nmap(bufnr, "gI", telescope.lsp_implementations, "Goto Implementation")
+	nmap(bufnr, "gy", telescope.lsp_type_definitions, "Goto Type Definition")
+	nmap(bufnr, "K", "<cmd>Lspsaga hover_doc<CR>", "Hover Documentation")
+end
+
+local lsp_formatting = function(bufnr)
+	vim.lsp.buf.format({
+		filter = function(client)
+			-- apply whatever logic you want (in this example, we'll only use null-ls)
+			return client.name == "null-ls"
+		end,
+		bufnr = bufnr,
+	})
+end
+
+local function is_null_ls_formatting_enabled(bufnr)
+	local file_type = vim.api.nvim_buf_get_option(bufnr, "filetype")
+	local generators =
+		require("null-ls.generators").get_available(file_type, require("null-ls.methods").internal.FORMATTING)
+	return #generators > 0
+end
+
 function M.lsp_setup()
-	local dynamic_capabilities = vim.lsp.protocol.make_client_capabilities()
-	local capabilities = require("cmp_nvim_lsp").default_capabilities(dynamic_capabilities)
-	local lspconfig = require("lspconfig")
-	local mason_tool_installer = require("mason-tool-installer")
+	local lspsupport = require("arcuvim.plugins.language_support")
+	local lspconfig, cmp = require("lspconfig"), require("cmp")
+	local cmp_git = require("cmp_git")
+	local copilot = require("copilot")
+	local luasnip_from_vscode = require("luasnip.loaders.from_vscode")
+	local lspsaga = require("lspsaga")
+	local lsp_lines = require("lsp_lines")
 	local lspkind = require("lspkind")
+	local mason_tool_installer = require("mason-tool-installer")
+	local mason_lspconfig, mason_null_ls = require("mason-lspconfig"), require("mason-null-ls")
 	local null_ls = require("null-ls")
-	local cmp = require("cmp")
+	local capabilities = require("cmp_nvim_lsp").default_capabilities()
+	local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+
 	capabilities.textDocument.completion.completionItem.snippetSupport = true
 	capabilities.textDocument.completion.completionItem.resolveSupport = {
 		properties = { "documentation", "detail", "additionalTextEdits" },
 	}
 	capabilities.textDocument.foldingRange = { dynamicRegistration = false, lineFoldingOnly = true }
 
-	local prompts = {
-		-- Code related prompts
-		Explain = "Please explain how the following code works.",
-		Review = "Please review the following code and provide suggestions for improvement.",
-		Tests = "Please explain how the selected code works, then generate unit tests for it.",
-		Refactor = "Please refactor the following code to improve its clarity and readability.",
-		FixCode = "Please fix the following code to make it work as intended.",
-		FixError = "Please explain the error in the following text and provide a solution.",
-		BetterNamings = "Please provide better names for the following variables and functions.",
-		Documentation = "Please provide documentation for the following code.",
-		SwaggerApiDocs = "Please provide documentation for the following API using Swagger.",
-		SwaggerJsDocs = "Please write JSDoc for the following API using Swagger.",
-		-- Text related prompts
-		Summarize = "Please summarize the following text.",
-		Spelling = "Please correct any grammar and spelling errors in the following text.",
-		Wording = "Please improve the grammar and wording of the following text.",
-		Concise = "Please rewrite the following text to make it more concise.",
-	}
-
-	local on_attach = function(client, bufnr)
-		-- Omnipotent keymaps
-		local function nmap(keys, func, desc)
-			vim.keymap.set("n", keys, func, { buffer = bufnr, desc = "LSP: " .. desc })
-		end
-
-		nmap("<leader>cr", vim.lsp.buf.rename, "Rename")
-		nmap("<leader>ca", vim.lsp.buf.code_action, "Code Action")
-		nmap("gd", require("telescope.builtin").lsp_definitions, "Goto Definition")
-		nmap("gr", require("telescope.builtin").lsp_references, "Goto References")
-		nmap("gI", require("telescope.builtin").lsp_implementations, "Goto Implementation")
-		nmap("gy", require("telescope.builtin").lsp_type_definitions, "Goto Type Definition")
-		nmap("K", "<cmd>Lspsaga hover_doc<cr>", "Hover Documentation")
-	end
-
-	local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
-	local mason_lsp_list = require("arcuvim.plugins.language_support").mason_lsp_list()
-	local mason_null_ls_list = require("arcuvim.plugins.language_support").mason_null_ls_list()
-	local none_null_ls_list = require("arcuvim.plugins.language_support").none_null_ls_list()
-
-	local merged_mason_list = {}
-
-	for _, v in ipairs(mason_lsp_list) do
-		table.insert(merged_mason_list, v)
-	end
-	for _, v in ipairs(mason_null_ls_list) do
-		table.insert(merged_mason_list, v)
-	end
-
-	local lsp_formatting = function(bufnr)
-		vim.lsp.buf.format({
-			filter = function(client)
-				-- apply whatever logic you want (in this example, we'll only use null-ls)
-				return client.name == "null-ls"
-			end,
-			bufnr = bufnr,
-		})
-	end
-
-	local function is_null_ls_formatting_enabled(bufnr)
-		local file_type = vim.api.nvim_buf_get_option(bufnr, "filetype")
-		local generators =
-			require("null-ls.generators").get_available(file_type, require("null-ls.methods").internal.FORMATTING)
-		return #generators > 0
-	end
-
 	mason_tool_installer.setup({
-		ensure_installed = merged_mason_list,
+		ensure_installed = vim.tbl_flatten({ lspsupport.mason_lsp_list(), lspsupport.mason_null_ls_list() }),
 	})
 
-	require("mason-null-ls").setup({
-		ensure_installed = mason_null_ls_list,
-		automatic_installation = true,
-		handlers = {},
-	})
+	mason_null_ls.setup({ ensure_installed = lspsupport.mason_null_ls_list(), automatic_installation = true })
 
-	require("mason-lspconfig").setup({
-		ensure_installed = mason_lsp_list,
+	mason_lspconfig.setup({
+		ensure_installed = lspsupport.mason_lsp_list(),
 		automatic_installation = true,
 		handlers = {
 			function(server)
@@ -104,7 +74,7 @@ function M.lsp_setup()
 	})
 
 	null_ls.setup({
-		sources = none_null_ls_list,
+		sources = lspsupport.none_null_ls_list(),
 		debug = true,
 		on_attach = function(client, bufnr)
 			if client.supports_method("textDocument/formatting") then
@@ -200,14 +170,14 @@ function M.lsp_setup()
 		}),
 	})
 
-	require("cmp").setup.filetype({ "dap-repl", "dapui_watches", "dapui_hover" }, {
+	cmp.setup.filetype({ "dap-repl", "dapui_watches", "dapui_hover" }, {
 		sources = {
 			{ name = "dap" },
 		},
 	})
 
-	require("cmp_git").setup({})
-	require("copilot").setup({
+	cmp_git.setup({})
+	copilot.setup({
 		suggestion = { enabled = false },
 		panel = { enabled = false },
 	})
@@ -229,16 +199,17 @@ function M.lsp_setup()
 		matching = { disallow_symbol_nonprefix_matching = false },
 	})
 
-	require("luasnip.loaders.from_vscode").lazy_load()
+	luasnip_from_vscode.lazy_load()
 
-	require("lspsaga").setup({
+	lspsaga.setup({
 		lightbulb = { enable = false },
 		symbol_in_winbar = { enable = true },
 		outline = { auto_preview = false },
 		ui = { border = "rounded" },
 	})
 
-	require("lsp_lines").setup()
+	lsp_lines.setup()
+
 	vim.diagnostic.config({
 		virtual_text = false,
 		virtual_lines = true,
@@ -252,84 +223,8 @@ function M.lsp_setup()
 		},
 	})
 
-	require("CopilotChat").setup({
-		question_header = "## User ",
-		answer_header = "## Copilot ",
-		error_header = "## Error ",
-		prompts = prompts,
-		mappings = {
-			-- Use tab for completion
-			complete = {
-				detail = "Use @<Tab> or /<Tab> for options.",
-				insert = "<Tab>",
-			},
-			-- Close the chat
-			close = {
-				normal = "q",
-				insert = "<C-c>",
-			},
-			-- Reset the chat buffer
-			reset = {
-				normal = "<C-x>",
-				insert = "<C-x>",
-			},
-			-- Submit the prompt to Copilot
-			submit_prompt = {
-				normal = "<CR>",
-				insert = "<C-CR>",
-			},
-			-- Accept the diff
-			accept_diff = {
-				normal = "<C-y>",
-				insert = "<C-y>",
-			},
-			-- Show help
-			show_help = {
-				normal = "g?",
-			},
-		},
-	})
-
-	vim.api.nvim_create_user_command("CopilotChatVisual", function(args)
-		require("CopilotChat").ask(args.args, { selection = require("CopilotChat.select").visual })
-	end, { nargs = "*", range = true })
-
-	vim.api.nvim_create_user_command("CopilotChatInline", function(args)
-		require("CopilotChat").ask(args.args, {
-			selection = require("CopilotChat.select").visual,
-			window = {
-				layout = "float",
-				relative = "cursor",
-				width = 1,
-				height = 0.4,
-				row = 1,
-			},
-		})
-	end, { nargs = "*", range = true })
-
-	-- Restore CopilotChatBuffer
-	vim.api.nvim_create_user_command("CopilotChatBuffer", function(args)
-		require("CopilotChat").ask(args.args, { selection = require("CopilotChat.select").buffer })
-	end, { nargs = "*", range = true })
-
-	-- Custom buffer for CopilotChat
-	vim.api.nvim_create_autocmd("BufEnter", {
-		pattern = "copilot-*",
-		callback = function()
-			vim.opt_local.relativenumber = true
-			vim.opt_local.number = true
-
-			-- Get current filetype and set it to markdown if the current filetype is copilot-chat
-			local ft = vim.bo.filetype
-			if ft == "copilot-chat" then
-				vim.bo.filetype = "markdown"
-			end
-		end,
-	})
-
 	vim.api.nvim_set_hl(0, "@lsp.type.class", { link = "Structure" })
 	vim.api.nvim_set_hl(0, "@lsp.type.decorator", { link = "Function" })
-	vim.api.nvim_set_hl(0, "CmpItemKindCopilot", { fg = "#6CC644" })
 
 	cmp.event:on("menu_opened", function()
 		vim.b.copilot_suggestion_hidden = true
@@ -340,92 +235,13 @@ function M.lsp_setup()
 	end)
 end
 
-function M.copilot_chat__keys()
-	return {
-		{
-			"<leader>cp",
-			function()
-				require("CopilotChat").select_prompt({
-					context = {
-						"buffers",
-					},
-				})
-			end,
-			desc = "CopilotChat - Prompt actions",
-		},
-		{
-			"<leader>cp",
-			function()
-				require("CopilotChat").select_prompt()
-			end,
-			mode = "x",
-			desc = "CopilotChat - Prompt actions",
-		},
-		-- Code related commands
-		{ "<leader>ce", "<cmd>CopilotChatExplain<cr>", desc = "CopilotChat - Explain code" },
-		{ "<leader>ct", "<cmd>CopilotChatTests<cr>", desc = "CopilotChat - Generate tests" },
-		{ "<leader>ccr", "<cmd>CopilotChatReview<cr>", desc = "CopilotChat - Review code" },
-		{ "<leader>cR", "<cmd>CopilotChatRefactor<cr>", desc = "CopilotChat - Refactor code" },
-		{ "<leader>cn", "<cmd>CopilotChatBetterNamings<cr>", desc = "CopilotChat - Better Naming" },
-		-- Chat with Copilot in visual mode
-		{
-			"<leader>cv",
-			":CopilotChatVisual",
-			mode = "x",
-			desc = "CopilotChat - Open in vertical split",
-		},
-		{
-			"<leader>cx",
-			":CopilotChatInline",
-			mode = "x",
-			desc = "CopilotChat - Inline chat",
-		},
-		-- Custom input for CopilotChat
-		{
-			"<leader>cai",
-			function()
-				local input = vim.fn.input("Ask Copilot: ")
-				if input ~= "" then
-					vim.cmd("CopilotChat " .. input)
-				end
-			end,
-			desc = "CopilotChat - Ask input",
-		},
-		-- Generate commit message based on the git diff
-		{
-			"<leader>cm",
-			"<cmd>CopilotChatCommit<cr>",
-			desc = "CopilotChat - Generate commit message for all changes",
-		},
-		-- Quick chat with Copilot
-		{
-			"<leader>cq",
-			function()
-				local input = vim.fn.input("Quick Chat: ")
-				if input ~= "" then
-					vim.cmd("CopilotChatBuffer " .. input)
-				end
-			end,
-			desc = "CopilotChat - Quick chat",
-		},
-		-- Fix the issue with diagnostic
-		{ "<leader>ccf", "<cmd>CopilotChatFixError<cr>", desc = "CopilotChat - Fix Diagnostic" },
-		-- Clear buffer and chat history
-		{ "<leader>ccl", "<cmd>CopilotChatReset<cr>", desc = "CopilotChat - Clear buffer and chat history" },
-		-- Toggle Copilot Chat Vsplit
-		{ "<leader>cv", "<cmd>CopilotChatToggle<cr>", desc = "CopilotChat - Toggle" },
-		-- Copilot Chat Models
-		{ "<leader>c?", "<cmd>CopilotChatModels<cr>", desc = "CopilotChat - Select Models" },
-		-- Copilot Chat Agents
-		{ "<leader>caa", "<cmd>CopilotChatAgents<cr>", desc = "CopilotChat - Select Agents" },
-	}
-end
-
 function M.dap_setup()
 	local dap = require("dap")
 	local dapui = require("dapui")
+	local nvim_dap_vt = require("nvim-dap-virtual-text")
 	dapui.setup()
-	require("nvim-dap-virtual-text").setup({})
+	nvim_dap_vt.setup({})
+
 	require("arcuvim.plugins.language_support").debuggers()
 
 	dap.listeners.before.attach.dapui_config = function()

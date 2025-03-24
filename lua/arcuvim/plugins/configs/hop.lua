@@ -57,7 +57,7 @@ function M.keys()
 			"<leader>hl",
 			"<cmd>HopLineStart<cr>",
 			remap = true,
-		}	
+		},
 	}
 end
 

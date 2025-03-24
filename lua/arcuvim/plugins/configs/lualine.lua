@@ -30,7 +30,6 @@ function M.setup()
 			},
 			lualine_c = {},
 			lualine_x = {
-				"copilot",
 				"encoding",
 				"fileformat",
 				{
