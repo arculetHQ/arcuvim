@@ -15,6 +15,9 @@ function M.setup()
 			noice = true,
 			fidget = true,
 			sandwich = true,
+			lsp_saga = true,
+			nvim_surround = true,
+			window_picker = true,
 			snacks = {
 				enabled = true,
 				indent_scope_color = "mauve", -- catppuccin color (eg. `lavender`) Default: text
@@ -22,6 +25,13 @@ function M.setup()
 			mini = {
 				enabled = true,
 				indentscope_color = "", -- catppuccin color (eg. `lavender`) Default: text
+			},
+			colorful_winsep = {
+				enabled = true,
+			},
+			illuminate = {
+				enabled = true,
+				lsp = true,
 			},
 		},
 	})
